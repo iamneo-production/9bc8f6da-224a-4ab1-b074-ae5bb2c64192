@@ -1,94 +1,19 @@
-package com.iamneo.microservices.portfolioservice.service;
+package com.iamneo.microservices.portfolioservice;
 
-import com.iamneo.microservices.portfolioservice.model.Portfolio;
-import com.iamneo.microservices.portfolioservice.model.PortfolioResponseDto;
-import com.iamneo.microservices.portfolioservice.model.StockDto;
-import com.iamneo.microservices.portfolioservice.repository.PortfolioRepository;
-import com.iamneo.microservices.portfolioservice.service.client.StocksFeignClient;
-import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+@SpringBootApplication
+@EnableFeignClients
+@EnableJpaRepositories("com.iamneo.microservices.repository")
+@EntityScan("com.iamneo.microservices.model")
+public class PortfolioServiceApplication {
 
-@Service
-public class PortfolioService {
-
-    @Autowired
-    private PortfolioRepository portfolioRepository;
-
-    @Autowired
-    private StocksFeignClient stocksFeignClient;
-
-//    @Transactional
-    public String addStock(Portfolio portfolio){
-
-        Portfolio existingQuantity = portfolioRepository.findByCustomerIdAndStockId(portfolio.getCustomerId(), portfolio.getStockId());
-
-        if (existingQuantity != null){
-
-            existingQuantity.addQuantity(portfolio.getQuantity());
-            portfolioRepository.save(existingQuantity);
-        }else {
-
-            portfolioRepository.save(portfolio);
-        }
-
-        return "Success";
+    public static void main(String[] args) {
+        SpringApplication.run(PortfolioServiceApplication.class, args);
     }
 
-    @Transactional
-    public String sellStock(Portfolio portfolio){
-
-        Portfolio existingQuantity = portfolioRepository.findByCustomerIdAndStockId(portfolio.getCustomerId(), portfolio.getStockId());
-
-        if (existingQuantity != null){
-
-            if (existingQuantity.getQuantity() > portfolio.getQuantity()){
-
-                return "Invalid Sell Quantity";
-            }else if (existingQuantity.getQuantity().equals(portfolio.getQuantity())){
-
-                portfolioRepository.deleteById(existingQuantity.getId());
-            }else {
-                existingQuantity.reduceQuantity(portfolio.getQuantity());
-                portfolioRepository.save(existingQuantity);
-            }
-        }
-
-        return "Success";
-    }
-
-//    @CircuitBreaker(name = "getStockDetails",fallbackMethod="getStockDetailsFallback")
-    public PortfolioResponseDto getClientPortfolio(Long customerId) {
-
-        List<Portfolio> getStocks = portfolioRepository.findAllByCustomerId(customerId);
-        PortfolioResponseDto portfolioResponseDto = new PortfolioResponseDto(customerId);
-
-        if (getStocks.isEmpty()){
-
-            List<Long> stocksList = getStocks.stream().map(Portfolio::getStockId).toList();
-
-            Map<Long,StockDto> stocksDetails = stocksFeignClient.getStocksDetails(stocksList).stream().
-                    collect(Collectors.toMap(StockDto::getId, (i)->i));
-
-            double totalAmount = 0.0;
-
-            for (Portfolio stock : getStocks) {
-                stocksDetails.get(stock.getStockId()).setQuantity(stock.getQuantity());
-                totalAmount += (stock.getQuantity() * stocksDetails.get(stock.getStockId()).getPrice());
-                portfolioResponseDto.getStockDto().add(stocksDetails.get(stock.getStockId()));
-            }
-
-            portfolioResponseDto.setTotalAmount(totalAmount);
-        }
-
-        return portfolioResponseDto;
-    }
 }
