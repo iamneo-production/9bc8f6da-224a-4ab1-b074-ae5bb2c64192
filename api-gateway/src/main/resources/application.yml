@@ -21,6 +21,10 @@ spring:
           filters:
             - RewritePath=/iamneo/(?<segment>.*), /portfolio-service/${segment}
 
+        - id: payment-service
+          uri: lb://payment-service
+          predicates:
+            - Path=/payment/buy
 
 
 eureka:
