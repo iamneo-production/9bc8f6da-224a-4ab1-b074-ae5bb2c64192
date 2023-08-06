@@ -10,6 +10,6 @@ import java.util.List;
 @FeignClient("stocks")
 public interface StocksFeignClient {
 
-    @RequestMapping(method = RequestMethod.GET, value = "getStocksList", consumes = "application/json")
+    @RequestMapping(method = RequestMethod.POST,path = "stocks/getStockDetails",value = "getStocksList", consumes = "application/json")
     List<StockDto> getStocksDetails(List<Long> stockList);
 }

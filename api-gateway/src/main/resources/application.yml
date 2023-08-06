@@ -12,7 +12,9 @@ spring:
         - id: authentication-service
           uri: lb://authentication-service
           predicates:
-            - Path=/auth/**
+            - Path=/iamneo/**
+          filters:
+            - RewritePath=/iamneo/(?<segment>.*), /${segment}
 
         - id: portfolio-service
           uri: lb://PORTFOLIO-SERVICE
@@ -24,7 +26,16 @@ spring:
         - id: payment-service
           uri: lb://payment-service
           predicates:
-            - Path=/payment/buy
+            - Path=/iamneo/**
+          filters:
+            - RewritePath=/iamneo/(?<segment>.*), /${segment}
+
+        - id: stock-service
+          uri: lb://STOCK-SERVICE
+          predicates:
+            - Path=/iamneo/**
+          filters:
+            - RewritePath=/iamneo/(?<segment>.*), /${segment}
 
 
 eureka:
