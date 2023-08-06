@@ -14,6 +14,14 @@ spring:
           predicates:
             - Path=/auth/**
 
+        - id: portfolio-service
+          uri: lb://PORTFOLIO-SERVICE
+          predicates:
+            - Path=/iamneo/**
+          filters:
+            - RewritePath=/iamneo/(?<segment>.*), /portfolio-service/${segment}
+
+
 
 eureka:
   instance:

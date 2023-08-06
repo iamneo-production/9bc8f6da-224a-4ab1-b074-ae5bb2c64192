@@ -8,12 +8,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @EnableFeignClients
-@EnableJpaRepositories("com.iamneo.microservices.repository")
-@EntityScan("com.iamneo.microservices.model")
+@EnableJpaRepositories("com.iamneo.microservices.portfolioservice.repository")
+@EntityScan("com.iamneo.microservices.portfolioservice.model")
 public class PortfolioServiceApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(PortfolioServiceApplication.class, args);
     }
-
 }
