@@ -1,0 +1,39 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      routes:
+        #     for manual configuration of route
+        - id: authentication-service
+          uri: lb://authentication-service
+          predicates:
+            - Path=/auth/**
+
+        - id: portfolio-service
+          uri: lb://PORTFOLIO-SERVICE
+          predicates:
+            - Path=/iamneo/**
+          filters:
+            - RewritePath=/iamneo/(?<segment>.*), /portfolio-service/${segment}
+
+
+
+eureka:
+  instance:
+    prefer-ip-address:  true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: https://8080-ccbbabdaccdcbbeefcddfeabfccfa.project.examly.io/eureka
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
