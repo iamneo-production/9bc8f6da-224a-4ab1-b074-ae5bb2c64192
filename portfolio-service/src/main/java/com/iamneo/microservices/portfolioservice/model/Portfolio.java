@@ -1,25 +1,42 @@
 package com.iamneo.microservices.portfolioservice.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 
-@Entity
+@Entity(name = "portfolio_detail")
 @Getter
+@Table(name = "portfolio_detail", schema = "portfolioDB")
 public class Portfolio {
     
     @Column(name="id")
     @Id
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     
     @Column(name="customer_id")
-    private long customerId;
+    private Long customerId;
 
     @Column(name="stock_id")
-    private long stockId;
+    @NonNull
+    private Long stockId;
 
     @Column(name="quantity")
-    private int quantity;
+    @NonNull
+    private Integer quantity;
+
+    public void addQuantity(Integer quantity) {
+        this.quantity+= quantity;
+    }
+
+    public void reduceQuantity(Integer quantity){
+
+        this.quantity -= quantity;
+    }
+
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
+    }
 }
