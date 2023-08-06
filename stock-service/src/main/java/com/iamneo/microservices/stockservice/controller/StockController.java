@@ -1,6 +1,6 @@
 package com.iamneo.microservices.stockservice.controller;
 
-import com.iamneo.microservices.stockservice.service.StockService;
+import com.iamneo.microservices.stockservice.services.StockService;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
