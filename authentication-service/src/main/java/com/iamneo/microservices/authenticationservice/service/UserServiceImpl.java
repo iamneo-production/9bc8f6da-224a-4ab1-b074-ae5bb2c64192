@@ -1,5 +1,5 @@
 
-import com.stackroute.AuthenticatorService.exception.UserNotFoundException;
+import com.iamneo.microservices.authenticationservice.exception.UserNotFoundException;
 import com.iamneo.microservices.authenticationservice.entity.User;
 import com.iamneo.microservices.authenticationservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
